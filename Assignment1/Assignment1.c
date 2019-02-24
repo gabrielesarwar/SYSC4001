@@ -24,6 +24,7 @@ int main (){
         int Q[3][3]; //result matrix
     
         int written; //a flag - if 0 means not written, else it has been written on
+        char test;
     };
     
     
@@ -46,7 +47,7 @@ int main (){
     
     srand((unsigned int)getpid());
     
-    shmid = shmget((key_t)1235, sizeof(struct shared_matrix), 0666 | IPC_CREAT);
+    shmid = shmget((key_t)1233, sizeof(struct shared_matrix), 0666 | IPC_CREAT);
     
     if (shmid == -1){
         fprintf(stderr, "shmget failed \n");
@@ -66,8 +67,11 @@ int main (){
     //Solving FIRST ROW
     
     printf("Fork starting \n");
+    
+    
     pid = fork();
     
+    shared_stuff = (struct shared_matrix *)shared_memory;
     //switch
     switch(pid){
        
@@ -85,21 +89,31 @@ int main (){
             
             
             
+            shared_stuff->test = 'T'; //to test
+            printf("%c \n", shared_stuff->test);
+            
             
             break;
         default:
             //parent
             printf("This is the parent \n");
-            while(running) {
+      /**      while(running) {
                 
                 if(shared_stuff->written) {
                     //flag is raised, done this row
-                    
+                    printf("The first row is: \n");
+                    for(int i = 0; i < 4; i++){
+                        //go through row
+                        printf("%i" shared_stuff->i);
+                        sleep( rand() % 4);
+                    }
+       
+                    shared_stuff->written = 0 //close flag
                 }
                 
                 
                 
-            }
+            } **/ //going to add this part after - will cause a crash rn
             
             
             
@@ -108,7 +122,6 @@ int main (){
             
     }
     
-    exit(0);
     
     if (shmdt(shared_memory) == -1){
         fprintf(stderr, "shmdt failed \n");
@@ -119,6 +132,8 @@ int main (){
         fprintf(stderr, "shmctl failed \n");
         exit(EXIT_FAILURE);
     }
+    
+   
     
     exit(EXIT_SUCCESS);
     
