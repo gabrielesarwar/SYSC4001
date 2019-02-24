@@ -22,9 +22,12 @@ int main (){
         int M[4][4]; //first matrix
         int N[4][4]; //second matrix
         int Q[4][4]; //result matrix
+    
+        int K; //current Y value of result matrix Q
+        int I; //current X value of result matrix Q
         
         int written; //a flag - if 0 means not written, else it has been written on
-        
+        char test;
     };
     
     
@@ -43,12 +46,7 @@ int main (){
     struct shared_matrix *shared_stuff;
     int shmid;
     pid_t pid;
-    
-    pid_t process1;
-    pid_t process2;
-    pid_t process3;
-    pid_t process4;
-    
+
     
     srand((unsigned int)getpid());
     
@@ -76,13 +74,10 @@ int main (){
     
     pid = fork();
     
-    
-    
-    
     shared_stuff = (struct shared_matrix *)shared_memory;
     //switch
     
-    //shared_stuff->test = 'T'; //to test
+    shared_stuff->test = 'T'; //to test
     
     //INIT STUFF HERE
     int counter = 1;
@@ -123,192 +118,69 @@ int main (){
     shared_stuff->N[2][3] = 4;
     shared_stuff->N[3][3] = 2;
     
-    //creating multiple processes
-    
-    if (pid) {
-        process1 = pid;
-        pid = fork();
-        switch(pid){
+    switch(pid){
+       
+        case -1:
+            
+            perror("Fork failed \n");
+            exit(1);
+            
+        case 0:
+            
+            //child process - go through the given row and calculate it
+            //store into matrix after
+            //each row will do this, until we are done (for part 1)
+            printf("This is the child \n");
+            
+            
+            
+            
+            //printf("%d \n", shared_stuff->M[1][1]);
+            
+            for(int j = 0; j < 4; j++){
                 
-            case -1:
-                
-                perror("Fork failed \n");
-                exit(1);
-                
-            case 0:
-                
-                //child process - go through the given row and calculate it
-                //store into matrix after
-                //each row will do this, until we are done (for part 1)
-                printf("This is the child process 1\n");
-                
-                
-                
-                break;
-            default:
-                //parent
-                printf("This is the parent \n");
-                while(running) {
-                    break;
+                for (int i = 0; i < 4; i++){
+                    
+                    shared_stuff->Q[i][j] = 0;
+                    
+                    for(int k = 0; k < 4; k++){
+                        
+                        shared_stuff->Q[i][j] +=  shared_stuff->M[i][k] *  shared_stuff->N[k][j];
+                        
+                    }
                     
                 }
-        }
-    }
-    
-    if (pid) {
-        process2 = pid;
-        pid = fork();
-        switch(pid){
-                
-            case -1:
-                
-                perror("Fork failed \n");
-                exit(1);
-                
-            case 0:
-                
-                //child process - go through the given row and calculate it
-                //store into matrix after
-                //each row will do this, until we are done (for part 1)
-                printf("This is the child process 2\n");
                 
                 
                 
-                break;
-            default:
-                //parent
-                printf("This is the parent \n");
-                while(running) {
-                    break;
-                    
+            }
+            
+            shared_stuff->written = 1; //done
+            
+            break;
+        default:
+            //parent
+            printf("This is the parent \n");
+            while(running) {
+                
+                if(shared_stuff->written) {
+                    //flag is raised, done this row
+                    printf("Done! \n");
+       
+                    shared_stuff->written = 0; //close flag
+                    running = 0;
                 }
-        }
+                
+                
+                
+            }  //going to add this part after - will cause a crash rn
+            
+            
+            
+            
+            break;
+            
     }
-    
-    if (pid) {
-        process3 = pid;
-        pid = fork();
-        switch(pid){
-                
-            case -1:
-                
-                perror("Fork failed \n");
-                exit(1);
-                
-            case 0:
-                
-                //child process - go through the given row and calculate it
-                //store into matrix after
-                //each row will do this, until we are done (for part 1)
-                printf("This is the child process 3\n");
-                
-                
-                
-                break;
-            default:
-                //parent
-                printf("This is the parent \n");
-                while(running) {
-                    break;
-                    
-                }
-        }
-    }
-    
-    if (pid) {
-        process4 = pid;
-        pid = fork();
-        switch(pid){
-                
-            case -1:
-                
-                perror("Fork failed \n");
-                exit(1);
-                
-            case 0:
-                
-                //child process - go through the given row and calculate it
-                //store into matrix after
-                //each row will do this, until we are done (for part 1)
-                printf("This is the child process 4\n");
-                
-                
-                
-                break;
-            default:
-                //parent
-                printf("This is the parent \n");
-                while(running) {
-                    break;
-                    
-                }
-        }
-    }
-    
-    
-    //    switch(pid){
-    //
-    //        case -1:
-    //
-    //            perror("Fork failed \n");
-    //            exit(1);
-    //
-    //        case 0:
-    //
-    //            //child process - go through the given row and calculate it
-    //            //store into matrix after
-    //            //each row will do this, until we are done (for part 1)
-    //            printf("This is the child \n");
-    //
-    //
-    //
-    //
-    //            //printf("%d \n", shared_stuff->M[1][1]);
-    //
-    //            for(int j = 0; j < 4; j++){
-    //
-    //                for (int i = 0; i < 4; i++){
-    //
-    //                    shared_stuff->Q[i][j] = 0;
-    //
-    //                    for(int k = 0; k < 4; k++){
-    //
-    //                        shared_stuff->Q[i][j] +=  shared_stuff->M[i][k] *  shared_stuff->N[k][j];
-    //
-    //                    }
-    //
-    //                }
-    //
-    //
-    //
-    //            }
-    //
-    //            shared_stuff->written = 1; //done
-    //
-    //            break;
-    //        default:
-    //            //parent
-    //            printf("This is the parent \n");
-    //            while(running) {
-    //
-    //                if(shared_stuff->written) {
-    //                    //flag is raised, done this row
-    //                    printf("Done! \n");
-    //
-    //                    shared_stuff->written = 0; //close flag
-    //                    running = 0;
-    //                }
-    //
-    //
-    //
-    //            }  //going to add this part after - will cause a crash rn
-    //
-    //
-    //
-    //
-    //            break;
-    //
-    //    }
     
     
     if (shmdt(shared_memory) == -1){
@@ -321,11 +193,10 @@ int main (){
         exit(EXIT_FAILURE);
     }
     
-    
+   
     
     exit(EXIT_SUCCESS);
     
     
     
 }
-
