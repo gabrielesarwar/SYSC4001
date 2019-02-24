@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/shm.h>
+#include <sys/types.h>
 
 
 
@@ -40,10 +41,12 @@ int main (){
     void *shared_memory = (void *)0;
     struct shared_matrix *shared_stuff;
     int shmid;
+    pid_t pid;
+
     
     srand((unsigned int)getpid());
     
-    shmid = shmget((key_t)1234, sizeof(struct shared_matrix), 0666 | IPC_CREAT);
+    shmid = shmget((key_t)1235, sizeof(struct shared_matrix), 0666 | IPC_CREAT);
     
     if (shmid == -1){
         fprintf(stderr, "shmget failed \n");
@@ -52,6 +55,7 @@ int main (){
     
     
     shared_memory = shmat(shmid, (void *)0, 0);
+    
     if (shared_memory == (void *)-1){
         fprintf(stderr, "shmat failed \n");
         exit(EXIT_FAILURE);
@@ -59,8 +63,64 @@ int main (){
     
     printf("memory attached at %X\n",(int)shared_memory);
     
+    //Solving FIRST ROW
     
+    printf("Fork starting \n");
+    pid = fork();
     
+    //switch
+    switch(pid){
+       
+        case -1:
+            
+            perror("Fork failed \n");
+            exit(1);
+            
+        case 0:
+            
+            //child process - go through the given row and calculate it
+            //store into matrix after
+            //each row will do this, until we are done (for part 1)
+            printf("This is the child \n");
+            
+            
+            
+            
+            break;
+        default:
+            //parent
+            printf("This is the parent \n");
+            while(running) {
+                
+                if(shared_stuff->written) {
+                    //flag is raised, done this row
+                    
+                }
+                
+                
+                
+            }
+            
+            
+            
+            
+            break;
+            
+    }
+    
+    exit(0);
+    
+    if (shmdt(shared_memory) == -1){
+        fprintf(stderr, "shmdt failed \n");
+        exit(EXIT_FAILURE);
+    }
+    
+    if (shmctl(shmid, IPC_RMID, 0) == -1){
+        fprintf(stderr, "shmctl failed \n");
+        exit(EXIT_FAILURE);
+    }
+    
+    exit(EXIT_SUCCESS);
     
     
     
