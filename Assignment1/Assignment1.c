@@ -19,10 +19,13 @@ int main (){
     
     struct shared_matrix {
         
-        int M[3][3]; //first matrix
-        int N[3][3]; //second matrix
-        int Q[3][3]; //result matrix
+        int M[4][4]; //first matrix
+        int N[4][4]; //second matrix
+        int Q[4][4]; //result matrix
     
+        int K; //current Y value of result matrix Q
+        int I; //current X value of result matrix Q
+        
         int written; //a flag - if 0 means not written, else it has been written on
         char test;
     };
@@ -73,6 +76,48 @@ int main (){
     
     shared_stuff = (struct shared_matrix *)shared_memory;
     //switch
+    
+    shared_stuff->test = 'T'; //to test
+    
+    //INIT STUFF HERE
+    int counter = 1;
+    
+    //Init M
+    shared_stuff->M[0][0] = 1;
+    shared_stuff->M[1][0] = 2;
+    shared_stuff->M[2][0] = 3;
+    shared_stuff->M[3][0] = 4;
+    shared_stuff->M[0][1] = 5;
+    shared_stuff->M[1][1] = 6;
+    shared_stuff->M[2][1] = 7;
+    shared_stuff->M[3][1] = 8;
+    shared_stuff->M[0][2] = 4;
+    shared_stuff->M[1][2] = 3;
+    shared_stuff->M[2][2] = 2;
+    shared_stuff->M[3][2] = 1;
+    shared_stuff->M[0][3] = 8;
+    shared_stuff->M[1][3] = 7;
+    shared_stuff->M[2][3] = 6;
+    shared_stuff->M[3][3] = 5;
+    
+    //Init N
+    shared_stuff->N[0][0] = 1;
+    shared_stuff->N[1][0] = 3;
+    shared_stuff->N[2][0] = 5;
+    shared_stuff->N[3][0] = 7;
+    shared_stuff->N[0][1] = 2;
+    shared_stuff->N[1][1] = 4;
+    shared_stuff->N[2][1] = 6;
+    shared_stuff->N[3][1] = 8;
+    shared_stuff->N[0][2] = 7;
+    shared_stuff->N[1][2] = 3;
+    shared_stuff->N[2][2] = 5;
+    shared_stuff->N[3][2] = 7;
+    shared_stuff->N[0][3] = 8;
+    shared_stuff->N[1][3] = 6;
+    shared_stuff->N[2][3] = 4;
+    shared_stuff->N[3][3] = 2;
+    
     switch(pid){
        
         case -1:
@@ -89,31 +134,46 @@ int main (){
             
             
             
-            shared_stuff->test = 'T'; //to test
-            printf("%c \n", shared_stuff->test);
             
+            //printf("%d \n", shared_stuff->M[1][1]);
+            
+            for(int j = 0; j < 4; j++){
+                
+                for (int i = 0; i < 4; i++){
+                    
+                    shared_stuff->Q[i][j] = 0;
+                    
+                    for(int k = 0; k < 4; k++){
+                        
+                        shared_stuff->Q[i][j] +=  shared_stuff->M[i][k] *  shared_stuff->N[k][j];
+                        
+                    }
+                    
+                }
+                
+                
+                
+            }
+            
+            shared_stuff->written = 1; //done
             
             break;
         default:
             //parent
             printf("This is the parent \n");
-      /**      while(running) {
+            while(running) {
                 
                 if(shared_stuff->written) {
                     //flag is raised, done this row
-                    printf("The first row is: \n");
-                    for(int i = 0; i < 4; i++){
-                        //go through row
-                        printf("%i" shared_stuff->i);
-                        sleep( rand() % 4);
-                    }
+                    printf("Done! \n");
        
-                    shared_stuff->written = 0 //close flag
+                    shared_stuff->written = 0; //close flag
+                    running = 0;
                 }
                 
                 
                 
-            } **/ //going to add this part after - will cause a crash rn
+            }  //going to add this part after - will cause a crash rn
             
             
             
