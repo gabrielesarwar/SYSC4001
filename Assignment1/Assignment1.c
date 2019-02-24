@@ -162,54 +162,58 @@ int main (){
                 
             }  //going to add this part after - will cause a crash rn
             
+            _Exit(EXIT_SUCCESS);
             break;
             
     }
     
-    //    running = 1;
-    //
-    //    pid_t n2 = fork();
-    //
-    //    switch(n2) {
-    //
-    //        case -1:
-    //
-    //            perror("Fork failed \n");
-    //            exit(1);
-    //        case 0:
-    //
-    //            //child process 2
-    //            //printf("%d \n", shared_stuff->M[1][1]);
-    //            for(int i = 0; i < 4; i++){
-    //                shared_stuff->Q[i][1] = 0;
-    //
-    //                for(int k = 0; k < 4; k++){
-    //                    shared_stuff->Q[i][1] += shared_stuff->M[i][k] * shared_stuff->N[k][1];
-    //                }
-    //            }
-    //
-    //            shared_stuff->written = 1;
-    //
-    //            break;
-    //
-    //        default:
-    //
-    //            while(running){
-    //
-    //                if(shared_stuff->written){
-    //                    printf("done!");
-    //                    shared_stuff->written = 0; //close flag
-    //                    //running = 0;
-    //                    _Exit(EXIT_SUCCESS);
-    //                }
-    //
-    //            }
-    //
-    //
-    //            break;
-    //
-    //    }
-    //
+        running = 1;
+    
+        pid_t n2 = fork();
+    
+        switch(n2) {
+    
+            case -1:
+    
+                perror("Fork failed \n");
+                exit(1);
+            case 0:
+    
+                //child process 2
+                //printf("%d \n", shared_stuff->M[1][1]);
+                for(int i = 0; i < 4; i++){
+                    shared_stuff->Q[i][1] = 0;
+    
+                    for(int k = 0; k < 4; k++){
+                        shared_stuff->Q[i][1] += shared_stuff->M[i][k] * shared_stuff->N[k][1];
+                    }
+                }
+    
+                shared_stuff->written = 1;
+    
+                break;
+    
+            default:
+    
+                while(running) {
+                    
+                    if(shared_stuff->written) {
+                        //flag is raised, done this row
+                        printf("Done row 2! \n");
+                        
+                        shared_stuff->written = 0; //close flag
+                        running = 0;
+                    }
+                    
+                    
+                    
+                }  //going to add this part after - will cause a crash rn
+    
+                _Exit(EXIT_SUCCESS);
+                break;
+    
+        }
+    
     //    running = 1;
     //
     //    pid_t n3 = fork();
